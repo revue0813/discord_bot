@@ -67,56 +67,41 @@ def run():
         await ctx.send(random.choice(options))
 
     @bot.command(
+            aliases=["r"],
+            brief = "Rolls dice",
+            description = "Rolls any dice size",
+            help = "Bot will roll dice if format matches: #d#.\nExample1: 2d20 will roll 2 20 sided dice.\nExample2: 1d20 2d10 will roll 1 20 sided die and 2 10 sided dice.",
+            enabled=True,
+            hidden=False
+            )
+    async def roll(ctx, *args):
+        results = []
 
-    )
-    async def d20(ctx):
-        await ctx.send(random.randrange(1,20,1))
-
-    @bot.command(
-            
-    )
-    async def dice(ctx, num : int):
-        await ctx.send(random.randrange(1,num,1))
-
-    @bot.command(
-            
-    )
-    async def roll(ctx, numOfDice, dieSize):
-        try:
-            numOfDiceInt = int(str(numOfDice))
-        except ValueError:
-            await ctx.send("The format was incorrect, enter a number first, example: '!roll 1 d20'")
-
-        if (dieSize[0] == 'd'):
-            try:
-                dieSizeInt = int(dieSize[1:])
-            except ValueError:
-                await ctx.send("The format was incorrect, enter a die second '!roll 1 d20'")
-
-        await ctx.send(f"Rolling {numOfDice} {dieSize}'s")
-        for i in range(numOfDiceInt):
-            
-            await ctx.send(f"{dieSize} #{i+1}: {random.randrange(1,dieSizeInt,1)}")
-
-    # @bot.command(
-    #     aliases=["max","mr"]
-    # )
-    # async def maxroll(ctx, *dice):
-    #     for i in range(len(dice)):
-    #         try:
-    #             if(dice[i].isdigit()):
-    #                 numOfDice = dice[i]
-    #             elif(dice[i][0] == 'd'):
-    #                 dieSize = int(dieSize[1:])
-    #         except ValueError:
-    #             await ctx.send(f"{dice[i]} is in the wrong format")
-            
-
-
-
+        for arg in args:
+            single_results = []
+            if 'd' in arg:
+                try:
+                    parts = arg.split('d')
+                    num_of_dice = int(parts[0])
+                    die_size = int(parts[1])
+                    for i in range(num_of_dice):
+                        roll = random.randint(1, die_size)
+                        #await ctx.send(f"Roll {i} with d{die_size} is: {roll}")
+                        single_results.append(roll)
+                        results.append(roll)
+                except ValueError:
+                    await ctx.send(f"Ran into an error with the argument: {arg}")
+                    return
+            else:
+                await ctx.send(f"Invalid argument format: {arg}")
+                return
+            single_result_str = ', '.join(map(str, single_results))
+            await ctx.send(f"d{die_size} Rolls: {single_result_str}")
         
+        result_str = ', '.join(map(str, results))
+        total = sum(results)
 
-
+        await ctx.send(f"Total: {total}")
 
     bot.run(settings.DISCORD_API_SECRET, root_logger=True)
 
